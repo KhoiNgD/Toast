@@ -1,8 +1,10 @@
 import React from "react";
 
+import crypto from "crypto";
+
 import Button from "../Button";
 
-import Toast from "../Toast";
+import ToastShelf from "../ToastShelf";
 
 import styles from "./ToastPlayground.module.css";
 
@@ -10,8 +12,8 @@ const VARIANT_OPTIONS = ["notice", "warning", "success", "error"];
 
 function ToastPlayground() {
   const [textAreaValue, setTextAreaValue] = React.useState("");
-  const [radioValue, setRadioValue] = React.useState("");
-  const [isToastShowed, setIsToastShowed] = React.useState(false);
+  const [radioValue, setRadioValue] = React.useState(VARIANT_OPTIONS[0]);
+  const [toastList, setToastList] = React.useState([]);
 
   function handleTextAreaChange(e) {
     setTextAreaValue(e.target.value);
@@ -21,7 +23,17 @@ function ToastPlayground() {
     setRadioValue(e.target.value);
   }
 
-  console.log(isToastShowed);
+  function handleButtonClick() {
+    const newToast = {
+      id: crypto.randomUUID(),
+      content: textAreaValue,
+      variant: radioValue,
+    };
+    const newToastList = [...toastList, newToast];
+    setToastList(newToastList);
+    setTextAreaValue("");
+    setRadioValue(VARIANT_OPTIONS[0]);
+  }
 
   return (
     <div className={styles.wrapper}>
@@ -30,13 +42,7 @@ function ToastPlayground() {
         <h1>Toast Playground</h1>
       </header>
 
-      {isToastShowed && (
-        <Toast
-          content={textAreaValue}
-          variant={radioValue}
-          setIsToastShowed={setIsToastShowed}
-        />
-      )}
+      <ToastShelf toastList={toastList} />
 
       <div className={styles.controlsWrapper}>
         <div className={styles.row}>
@@ -81,7 +87,7 @@ function ToastPlayground() {
         <div className={styles.row}>
           <div className={styles.label} />
           <div className={`${styles.inputWrapper} ${styles.radioWrapper}`}>
-            <Button onClick={() => setIsToastShowed(true)}>Pop Toast!</Button>
+            <Button onClick={handleButtonClick}>Pop Toast!</Button>
           </div>
         </div>
       </div>
